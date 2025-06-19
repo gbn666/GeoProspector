@@ -7,7 +7,7 @@ visualizer::visualizer(QWidget *parent) :
     ui(new Ui::visualizer)
 {
     ui->setupUi(this);
-    ui->
+
 }
 
 visualizer::~visualizer()

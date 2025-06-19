@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-QT       += charts
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 target.path=/home/
@@ -28,12 +28,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    visualizer.cpp
+    visualizer.cpp \
+    camerathread.cpp \
+    camera.cpp
 
 
 HEADERS += \
         mainwindow.h \
-    visualizer.h
+    visualizer.h \
+    camerathread.h \
+    camera.h \
+    ui_camera.h
 
 
 FORMS += \

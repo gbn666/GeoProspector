@@ -26,6 +26,7 @@ public:
     QLabel *label;
     QLabel *imagelabel1;
     QPushButton *pushButton;
+    QLabel *label_2;
 
     void setupUi(QWidget *visualizer)
     {
@@ -46,7 +47,10 @@ public:
         imagelabel1->setPixmap(QPixmap(QString::fromUtf8(":/new/prefix1/logo")));
         pushButton = new QPushButton(visualizer);
         pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(670, 400, 89, 25));
+        pushButton->setGeometry(QRect(670, 410, 89, 25));
+        label_2 = new QLabel(visualizer);
+        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setGeometry(QRect(80, 80, 250, 250));
 
         retranslateUi(visualizer);
 
@@ -59,6 +63,7 @@ public:
         label->setText(QApplication::translate("visualizer", "\345\217\257\350\247\206\345\214\226\346\225\260\346\215\256", 0));
         imagelabel1->setText(QString());
         pushButton->setText(QApplication::translate("visualizer", "\350\277\224\345\233\236\344\270\273\351\241\265\351\235\242", 0));
+        label_2->setText(QApplication::translate("visualizer", "TextLabel", 0));
     } // retranslateUi
 
 };
