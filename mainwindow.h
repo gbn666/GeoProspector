@@ -17,6 +17,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void onGasUpdate(int gasValue);
+
+    void onDistanceUpdate(float dist) ;
+
+    void onLightUpdate(int lightVal) ;
+
+    void onTempHumUpdate(float temp, float hum) ;
+    void onLedTriggered();
+
+
 private slots:
     void on_viewButton_clicked();
     void onFrameReady(unsigned char *rgbBuffer);

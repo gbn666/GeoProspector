@@ -30,7 +30,9 @@ SOURCES += \
         mainwindow.cpp \
     visualizer.cpp \
     camerathread.cpp \
-    camera.cpp
+    camera.cpp \
+    dataprocess.cpp \
+    dataprocessthread.cpp
 
 
 HEADERS += \
@@ -38,7 +40,10 @@ HEADERS += \
     visualizer.h \
     camerathread.h \
     camera.h \
-    ui_camera.h
+    ui_camera.h \
+    device.h \
+    dataprocess.h \
+    dataprocessthread.h
 
 
 FORMS += \
