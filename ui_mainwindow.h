@@ -16,11 +16,7 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -43,10 +39,6 @@ public:
     QLabel *label_4;
     QLabel *label_5;
     QLabel *label_6;
-    QMenuBar *menuBar;
-    QMenu *menutest;
-    QToolBar *mainToolBar;
-    QStatusBar *statusBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -57,14 +49,14 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         labelImage = new QLabel(centralWidget);
         labelImage->setObjectName(QStringLiteral("labelImage"));
-        labelImage->setGeometry(QRect(300, 10, 30, 29));
+        labelImage->setGeometry(QRect(160, 10, 30, 29));
         labelImage->setMinimumSize(QSize(30, 29));
         labelImage->setPixmap(QPixmap(QString::fromUtf8(":/new/prefix1/logo")));
         labelImage->setScaledContents(false);
         labelImage->setWordWrap(false);
         titlelabel = new QLabel(centralWidget);
         titlelabel->setObjectName(QStringLiteral("titlelabel"));
-        titlelabel->setGeometry(QRect(340, 0, 411, 41));
+        titlelabel->setGeometry(QRect(200, 0, 400, 41));
         QFont font;
         font.setFamily(QStringLiteral("AR PL UKai CN"));
         font.setPointSize(21);
@@ -73,7 +65,7 @@ public:
         titlelabel->setFont(font);
         viewButton = new QPushButton(centralWidget);
         viewButton->setObjectName(QStringLiteral("viewButton"));
-        viewButton->setGeometry(QRect(530, 70, 120, 40));
+        viewButton->setGeometry(QRect(290, 70, 120, 40));
         QFont font1;
         font1.setFamily(QStringLiteral("AR PL UKai CN"));
         font1.setPointSize(17);
@@ -81,59 +73,45 @@ public:
         viewButton->setDefault(false);
         saveButton = new QPushButton(centralWidget);
         saveButton->setObjectName(QStringLiteral("saveButton"));
-        saveButton->setGeometry(QRect(670, 70, 120, 40));
+        saveButton->setGeometry(QRect(500, 70, 120, 40));
         saveButton->setFont(font1);
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(480, 140, 120, 40));
+        pushButton->setGeometry(QRect(530, 160, 120, 40));
         pushButton->setFont(font1);
         lightButton = new QPushButton(centralWidget);
         lightButton->setObjectName(QStringLiteral("lightButton"));
-        lightButton->setGeometry(QRect(480, 200, 120, 40));
+        lightButton->setGeometry(QRect(530, 220, 120, 40));
         lightButton->setFont(font1);
         temperButton = new QPushButton(centralWidget);
         temperButton->setObjectName(QStringLiteral("temperButton"));
-        temperButton->setGeometry(QRect(480, 260, 120, 40));
+        temperButton->setGeometry(QRect(530, 280, 120, 40));
         temperButton->setFont(font1);
         gasButton = new QPushButton(centralWidget);
         gasButton->setObjectName(QStringLiteral("gasButton"));
-        gasButton->setGeometry(QRect(480, 320, 120, 40));
+        gasButton->setGeometry(QRect(530, 340, 120, 40));
         gasButton->setFont(font1);
         viewlabel = new QLabel(centralWidget);
         viewlabel->setObjectName(QStringLiteral("viewlabel"));
-        viewlabel->setGeometry(QRect(30, 120, 320, 240));
+        viewlabel->setGeometry(QRect(10, 110, 480, 360));
         viewlabel->setAlignment(Qt::AlignCenter);
         startButton = new QPushButton(centralWidget);
         startButton->setObjectName(QStringLiteral("startButton"));
-        startButton->setGeometry(QRect(390, 70, 120, 40));
+        startButton->setGeometry(QRect(80, 70, 120, 40));
         startButton->setFont(font1);
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setGeometry(QRect(630, 140, 121, 31));
+        label_3->setGeometry(QRect(680, 160, 121, 31));
         label_4 = new QLabel(centralWidget);
         label_4->setObjectName(QStringLiteral("label_4"));
-        label_4->setGeometry(QRect(630, 200, 101, 41));
+        label_4->setGeometry(QRect(680, 220, 101, 41));
         label_5 = new QLabel(centralWidget);
         label_5->setObjectName(QStringLiteral("label_5"));
-        label_5->setGeometry(QRect(630, 260, 111, 41));
+        label_5->setGeometry(QRect(680, 280, 111, 41));
         label_6 = new QLabel(centralWidget);
         label_6->setObjectName(QStringLiteral("label_6"));
-        label_6->setGeometry(QRect(630, 320, 91, 41));
+        label_6->setGeometry(QRect(680, 340, 91, 41));
         MainWindow->setCentralWidget(centralWidget);
-        menuBar = new QMenuBar(MainWindow);
-        menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 800, 28));
-        menutest = new QMenu(menuBar);
-        menutest->setObjectName(QStringLiteral("menutest"));
-        MainWindow->setMenuBar(menuBar);
-        mainToolBar = new QToolBar(MainWindow);
-        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
-        MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
-        statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
-        MainWindow->setStatusBar(statusBar);
-
-        menuBar->addAction(menutest->menuAction());
 
         retranslateUi(MainWindow);
 
@@ -157,7 +135,6 @@ public:
         label_4->setText(QApplication::translate("MainWindow", "data2", 0));
         label_5->setText(QApplication::translate("MainWindow", "data3", 0));
         label_6->setText(QApplication::translate("MainWindow", "data4", 0));
-        menutest->setTitle(QApplication::translate("MainWindow", "test", 0));
     } // retranslateUi
 
 };

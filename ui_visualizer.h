@@ -35,7 +35,7 @@ public:
         visualizer->resize(800, 480);
         label = new QLabel(visualizer);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(570, 20, 200, 40));
+        label->setGeometry(QRect(310, 10, 200, 40));
         QFont font;
         font.setFamily(QStringLiteral("AR PL UKai CN"));
         font.setPointSize(20);
@@ -43,14 +43,14 @@ public:
         label->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
         imagelabel1 = new QLabel(visualizer);
         imagelabel1->setObjectName(QStringLiteral("imagelabel1"));
-        imagelabel1->setGeometry(QRect(560, 20, 30, 29));
+        imagelabel1->setGeometry(QRect(300, 10, 30, 29));
         imagelabel1->setPixmap(QPixmap(QString::fromUtf8(":/new/prefix1/logo")));
         pushButton = new QPushButton(visualizer);
         pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(670, 410, 89, 25));
+        pushButton->setGeometry(QRect(670, 400, 89, 25));
         label_2 = new QLabel(visualizer);
         label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(80, 80, 250, 250));
+        label_2->setGeometry(QRect(60, 150, 250, 250));
 
         retranslateUi(visualizer);
 

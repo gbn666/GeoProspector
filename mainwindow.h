@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <visualizer.h>
+#include "camera.h"
+#include "camerathread.h"
 namespace Ui {
 class MainWindow;
 }
@@ -16,11 +18,15 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_viewButton_clicked();
     void onFrameReady(unsigned char *rgbBuffer);
+    void displayFrame(unsigned char *buffer);
+
+    void on_startButton_clicked();
 
 private:
     Ui::MainWindow *ui;
+     cameraThread *camThread;  // 成员变量声明
 };
 
 #endif // MAINWINDOW_H
