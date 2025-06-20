@@ -47,7 +47,7 @@ public:
         imagelabel1->setPixmap(QPixmap(QString::fromUtf8(":/new/prefix1/logo")));
         pushButton = new QPushButton(visualizer);
         pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(670, 400, 89, 25));
+        pushButton->setGeometry(QRect(680, 390, 89, 25));
         label_2 = new QLabel(visualizer);
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(60, 150, 250, 250));

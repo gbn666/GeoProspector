@@ -4,18 +4,18 @@
 #include <QDebug>
 
 int DataProcess(int mode) {
-    const char *path = nullptr;
+    const char *path = NULL;
     switch (mode) {
-        case static_cast<int>(ProcessMode::BroadGas):
+        case BroadGas:
             path = "/dev/MQ2";
             break;
-        case static_cast<int>(ProcessMode::Ultrasonic):
+        case Ultrasonic:
             path = "/dev/ULTRASONIC";
             break;
-        case static_cast<int>(ProcessMode::LightLevel):
+        case LightLevel:
             path = "/dev/BH1750";
             break;
-        case static_cast<int>(ProcessMode::TempHumidity):
+        case TempHumidity:
             path = "/dev/TempHum";
             break;
         default:
@@ -31,28 +31,29 @@ int DataProcess(int mode) {
 
     int result = 0;
     switch (mode) {
-    case static_cast<int>(ProcessMode::BroadGas): {
+    case BroadGas:
         if (::read(fd, &result, sizeof(result)) != sizeof(result)) {
             qWarning() << "BroadGas read error";
         }
         break;
-    }
-    case static_cast<int>(ProcessMode::Ultrasonic): {
+
+    case Ultrasonic: {
         long long raw = 0;
         if (::read(fd, &raw, sizeof(raw)) != sizeof(raw)) {
             qWarning() << "Ultrasonic read error";
         }
         float dist = raw * 0.017f;
-        result = static_cast<int>(dist * 100);
+        result = (int)(dist * 100);
         break;
     }
-    case static_cast<int>(ProcessMode::LightLevel): {
+
+    case LightLevel:
         if (::read(fd, &result, sizeof(result)) != sizeof(result)) {
             qWarning() << "LightLevel read error";
         }
         break;
-    }
-    case static_cast<int>(ProcessMode::TempHumidity): {
+
+    case TempHumidity: {
         int data[2] = {0};
         if (::read(fd, data, sizeof(data)) != sizeof(data)) {
             qWarning() << "TempHumidity read error";
@@ -62,6 +63,7 @@ int DataProcess(int mode) {
         result = temp * 100 + hum;
         break;
     }
+
     default:
         break;
     }

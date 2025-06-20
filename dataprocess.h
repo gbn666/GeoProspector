@@ -1,6 +1,9 @@
 #ifndef DATAPROCESS_H
 #define DATAPROCESS_H
 #include "dataprocessthread.h"
+#include <fcntl.h>     // open(), O_RDWR 等宏
+#include <unistd.h>    // read(), close() 等
+
 
 //用来加载设备驱动，并打开/dev/*
 //获取数据并显示在相应的qlabel或供计算使用
