@@ -102,15 +102,21 @@ public:
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QStringLiteral("label_3"));
         label_3->setGeometry(QRect(680, 160, 121, 31));
+        QFont font2;
+        font2.setPointSize(16);
+        label_3->setFont(font2);
         label_4 = new QLabel(centralWidget);
         label_4->setObjectName(QStringLiteral("label_4"));
         label_4->setGeometry(QRect(680, 220, 101, 41));
+        label_4->setFont(font2);
         label_5 = new QLabel(centralWidget);
         label_5->setObjectName(QStringLiteral("label_5"));
         label_5->setGeometry(QRect(680, 280, 111, 41));
+        label_5->setFont(font2);
         label_6 = new QLabel(centralWidget);
         label_6->setObjectName(QStringLiteral("label_6"));
         label_6->setGeometry(QRect(680, 340, 91, 41));
+        label_6->setFont(font2);
         MainWindow->setCentralWidget(centralWidget);
 
         retranslateUi(MainWindow);

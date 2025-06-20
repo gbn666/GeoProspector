@@ -224,6 +224,11 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>data1</string>
     </property>
@@ -236,6 +241,11 @@
       <width>101</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>data2</string>
@@ -250,6 +260,11 @@
       <height>41</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>data3</string>
     </property>
@@ -262,6 +277,11 @@
       <width>91</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>data4</string>

@@ -10,14 +10,19 @@ int DataProcess(int mode) {
             path = "/dev/MQ2";
             break;
         case Ultrasonic:
-            path = "/dev/ULTRASONIC";
+            path = "/dev/HCSR04";
             break;
         case LightLevel:
-            path = "/dev/BH1750";
+            path = "/dev/i2c-0";
             break;
         case TempHumidity:
-            path = "/dev/TempHum";
+            path = "/dev/DHT11";
             break;
+        case LEDBuzzer:
+            // 可选：如果没有设备路径，可以设置为 nullptr 或空处理
+            path = "/dev/LEDBuzzer";  // 或者 nullptr，如果你还没有该设备
+            break;
+
         default:
             qWarning() << "Unknown ProcessMode in DataProcess:" << mode;
             return 0;

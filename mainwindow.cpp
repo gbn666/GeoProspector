@@ -56,11 +56,11 @@ void MainWindow::on_startButton_clicked()
     camThread->startCapture();
     camThread->start();
 
-    DataProcessThread *thTempHum = new DataProcessThread(TempHumidity, this);
-    DataProcessThread *thGas     = new DataProcessThread(BroadGas, this);
-    DataProcessThread *thLight   = new DataProcessThread(LightLevel, this);
-    DataProcessThread *thUltra   = new DataProcessThread(Ultrasonic, this);
-//    DataProcessThread *thLed     = new DataProcessThread(LedBuzzer, this);
+    DataProcessThread *thTempHum = new DataProcessThread(TempHumidity, nullptr);
+    DataProcessThread *thGas     = new DataProcessThread(BroadGas, nullptr);
+    DataProcessThread *thLight   = new DataProcessThread(LightLevel, nullptr);
+    DataProcessThread *thUltra   = new DataProcessThread(Ultrasonic, nullptr);
+    DataProcessThread *thLed     = new DataProcessThread(LEDBuzzer, nullptr);
 
     connect(thTempHum, SIGNAL(tempHumDetected(QString)), this, SLOT(onTempHumDetected(QString)));
     thTempHum->start();
@@ -74,8 +74,8 @@ void MainWindow::on_startButton_clicked()
     connect(thUltra, SIGNAL(distanceWarning(float)), this, SLOT(onDistanceUpdate(float)));
     thUltra->start();
 
-//    connect(thLed, SIGNAL(ledBuzzerTriggered()), this, SLOT(onLedTriggered()));
-//    thLed->start();
+   connect(thLed, SIGNAL(ledBuzzerTriggered()), this, SLOT(onLedTriggered()));
+    thLed->start();
 }
 
 void MainWindow::onGasUpdate(int gasValue) {
@@ -93,9 +93,6 @@ void MainWindow::onLightUpdate(int lightVal) {
     ui->label_4->setText(QString::number(lightVal));
 }
 
-void MainWindow::onTempHumUpdate(float temp, float hum) {
-    ui->label_5->setText(QString::number(temp) + " °C," + QString::number(hum) + " %");
-}
 
 void MainWindow::onLedTriggered() {
     // 目前无UI操作，预留接口

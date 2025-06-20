@@ -48,7 +48,7 @@ void DataProcessThread::start() {
 
     m_timer = new QTimer(this);  // this在线程中，没问题
     connect(m_timer, &QTimer::timeout, this, &DataProcessThread::process);
-    m_timer->start(1000); // 每秒触发一次
+    m_timer->start(500); // 每秒触发一次
 }
 
 void DataProcessThread::stop() {

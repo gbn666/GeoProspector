@@ -22,7 +22,7 @@ public slots:
     void onGasUpdate(int gasValue);
     void onDistanceUpdate(float dist);
     void onLightUpdate(int lightVal);
-    void onTempHumUpdate(float temp, float hum);
+//    void onTempHumUpdate(float temp, float hum);
     void onTempHumDetected(const QString &info);
     void onLightDetected(const QString &info);
     void onLedTriggered();
