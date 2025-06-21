@@ -83,10 +83,22 @@ void DataProcessThread::process() {
         break;
     }
     case TempHumidity: {
-        int val = DataProcess(TempHumidity);
-        float temp = val / 100;
-        float hum  = val % 100;
-        emit tempHumDetected(QString("%1 °C, %2 %").arg(temp).arg(hum));
+        int result = DataProcess(TempHumidity);
+        if (result == 0) {
+            qWarning() << "TempHumidity data invalid, result = 0";
+            break;
+        }
+
+        float temperature = (result / 10000) / 100.0f;
+        float humidity = (result % 10000) / 100.0f;
+
+        if (temperature < 0 || temperature > 50 || humidity < 20 || humidity > 90) {
+            qWarning() << "TempHumidity out of range: Temp =" << temperature << "C, Humi =" << humidity << "%";
+            break;
+        }
+
+        qDebug() << "Temperature:" << temperature << "C, Humidity:" << humidity << "%";
+        emit tempHumDetected(temperature, humidity);
         break;
     }
     case LEDBuzzer: {

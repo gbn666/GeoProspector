@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[19];
-    char stringdata[235];
+    QByteArrayData data[21];
+    char stringdata[254];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,25 +37,27 @@ QT_MOC_LITERAL(4, 33, 16),
 QT_MOC_LITERAL(5, 50, 4),
 QT_MOC_LITERAL(6, 55, 13),
 QT_MOC_LITERAL(7, 69, 8),
-QT_MOC_LITERAL(8, 78, 17),
-QT_MOC_LITERAL(9, 96, 4),
-QT_MOC_LITERAL(10, 101, 15),
-QT_MOC_LITERAL(11, 117, 14),
-QT_MOC_LITERAL(12, 132, 21),
-QT_MOC_LITERAL(13, 154, 12),
-QT_MOC_LITERAL(14, 167, 14),
-QT_MOC_LITERAL(15, 182, 9),
-QT_MOC_LITERAL(16, 192, 12),
-QT_MOC_LITERAL(17, 205, 6),
-QT_MOC_LITERAL(18, 212, 22)
+QT_MOC_LITERAL(8, 78, 15),
+QT_MOC_LITERAL(9, 94, 11),
+QT_MOC_LITERAL(10, 106, 8),
+QT_MOC_LITERAL(11, 115, 15),
+QT_MOC_LITERAL(12, 131, 4),
+QT_MOC_LITERAL(13, 136, 14),
+QT_MOC_LITERAL(14, 151, 21),
+QT_MOC_LITERAL(15, 173, 12),
+QT_MOC_LITERAL(16, 186, 14),
+QT_MOC_LITERAL(17, 201, 9),
+QT_MOC_LITERAL(18, 211, 12),
+QT_MOC_LITERAL(19, 224, 6),
+QT_MOC_LITERAL(20, 231, 22)
     },
     "MainWindow\0onGasUpdate\0\0gasValue\0"
     "onDistanceUpdate\0dist\0onLightUpdate\0"
-    "lightVal\0onTempHumDetected\0info\0"
-    "onLightDetected\0onLedTriggered\0"
-    "on_viewButton_clicked\0onFrameReady\0"
-    "unsigned char*\0rgbBuffer\0displayFrame\0"
-    "buffer\0on_startButton_clicked"
+    "lightVal\0onTempHumUpdate\0temperature\0"
+    "humidity\0onLightDetected\0info\0"
+    "onLedTriggered\0on_viewButton_clicked\0"
+    "onFrameReady\0unsigned char*\0rgbBuffer\0"
+    "displayFrame\0buffer\0on_startButton_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -76,24 +78,24 @@ static const uint qt_meta_data_MainWindow[] = {
        1,    1,   64,    2, 0x0a /* Public */,
        4,    1,   67,    2, 0x0a /* Public */,
        6,    1,   70,    2, 0x0a /* Public */,
-       8,    1,   73,    2, 0x0a /* Public */,
-      10,    1,   76,    2, 0x0a /* Public */,
-      11,    0,   79,    2, 0x0a /* Public */,
-      12,    0,   80,    2, 0x08 /* Private */,
-      13,    1,   81,    2, 0x08 /* Private */,
-      16,    1,   84,    2, 0x08 /* Private */,
-      18,    0,   87,    2, 0x08 /* Private */,
+       8,    2,   73,    2, 0x0a /* Public */,
+      11,    1,   78,    2, 0x0a /* Public */,
+      13,    0,   81,    2, 0x0a /* Public */,
+      14,    0,   82,    2, 0x0a /* Public */,
+      15,    1,   83,    2, 0x0a /* Public */,
+      18,    1,   86,    2, 0x0a /* Public */,
+      20,    0,   89,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Float,    5,
     QMetaType::Void, QMetaType::Int,    7,
-    QMetaType::Void, QMetaType::QString,    9,
-    QMetaType::Void, QMetaType::QString,    9,
+    QMetaType::Void, QMetaType::Float, QMetaType::Float,    9,   10,
+    QMetaType::Void, QMetaType::QString,   12,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 14,   15,
-    QMetaType::Void, 0x80000000 | 14,   17,
+    QMetaType::Void, 0x80000000 | 16,   17,
+    QMetaType::Void, 0x80000000 | 16,   19,
     QMetaType::Void,
 
        0        // eod
@@ -107,7 +109,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->onGasUpdate((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 1: _t->onDistanceUpdate((*reinterpret_cast< float(*)>(_a[1]))); break;
         case 2: _t->onLightUpdate((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 3: _t->onTempHumDetected((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 3: _t->onTempHumUpdate((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2]))); break;
         case 4: _t->onLightDetected((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 5: _t->onLedTriggered(); break;
         case 6: _t->on_viewButton_clicked(); break;

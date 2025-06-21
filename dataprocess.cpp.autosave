@@ -1,7 +1,7 @@
 #include "dataprocess.h"
 #include <unistd.h>
 #include <QString>
-#include <QThread>
+#include <QThread>s
 #include <QDebug>
 #include <sys/ioctl.h>      // for ioctl()
 #include <linux/i2c-dev.h>  // for I2C_SLAVE

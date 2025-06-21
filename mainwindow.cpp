@@ -9,6 +9,8 @@
 #include "dataprocessthread.h"
 #include <QLabel>
 #include <QThread>
+#include <QDebug>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,9 +48,19 @@ void MainWindow::onFrameReady(unsigned char *rgbBuffer)
 
 void MainWindow::on_viewButton_clicked()
 {
-    this->close();
-    visualizer *vis = new visualizer;
-    vis->show();
+    this->hide();
+
+    visualizer *vis = new visualizer(nullptr); // 设为 nullptr，避免叠在主窗口上
+
+        vis->setAttribute(Qt::WA_DeleteOnClose);    // 窗口关闭时自动删除
+        connect(vis, &visualizer::returnToMainWindow, this, [this, vis]() {
+            qDebug() << "收到返回信号，切换回主页面";
+            vis->close();       // 隐藏 visualizer
+            this->show();       // 显示主窗口
+            camThread->startCapture(); // 重启相机
+        });
+
+        vis->show();
 }
 
 void MainWindow::on_startButton_clicked()
@@ -62,8 +74,10 @@ void MainWindow::on_startButton_clicked()
     DataProcessThread *thUltra   = new DataProcessThread(Ultrasonic, nullptr);
     DataProcessThread *thLed     = new DataProcessThread(LEDBuzzer, nullptr);
 
-    connect(thTempHum, SIGNAL(tempHumDetected(QString)), this, SLOT(onTempHumDetected(QString)));
-    thTempHum->start();
+    connect(thTempHum, &DataProcessThread::tempHumDetected,
+                this, &MainWindow::onTempHumUpdate);
+
+
 
     connect(thGas, SIGNAL(gasWarning(int)), this, SLOT(onGasUpdate(int)));
     thGas->start();
@@ -90,7 +104,7 @@ void MainWindow::onDistanceUpdate(float dist) {
 }
 
 void MainWindow::onLightUpdate(int lightVal) {
-    ui->label_4->setText(QString::number(lightVal));
+    ui->label_4->setText(QString::number(lightVal)+"  lux");
 }
 
 
@@ -99,10 +113,16 @@ void MainWindow::onLedTriggered() {
 }
 
 
-void MainWindow::onTempHumDetected(const QString &info) {
-    ui->label_5->setText(info);
+void MainWindow::onTempHumUpdate(float temperature, float humidity) {
+    ui->label_5->setText(
+        QString("%1 °C, %2 %")
+          .arg(temperature, 0, 'f', 1)
+          .arg(humidity,    0, 'f', 1)
+    );
 }
 
+
+
 void MainWindow::onLightDetected(const QString &info) {
-    ui->label_4->setText(info);
+    ui->label_4->setText(info+" lux");
 }

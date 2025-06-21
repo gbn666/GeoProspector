@@ -17,7 +17,7 @@ signals:
     void gasWarning(int);
     void distanceWarning(float);
     void lightDetected(QString);
-    void tempHumDetected(QString);
+   void tempHumDetected(float temperature, float humidity);
     void ledBuzzerTriggered();
 
 public slots:

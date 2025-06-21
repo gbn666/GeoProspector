@@ -1,13 +1,10 @@
 #include "visualizer.h"
 #include "ui_visualizer.h"
-#include "mainwindow.h"
 
-visualizer::visualizer(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::visualizer)
+visualizer::visualizer(MainWindow *mainWin, QWidget *parent)
+    : QWidget(parent), ui(new Ui::visualizer), m_mainWin(mainWin)
 {
     ui->setupUi(this);
-
 }
 
 visualizer::~visualizer()
@@ -17,8 +14,7 @@ visualizer::~visualizer()
 
 void visualizer::on_pushButton_clicked()
 {
-    this->close();
-    MainWindow *ui=new MainWindow;
-    ui->show();
-
+    emit returnToMainWindow();
 }
+
+
