@@ -15,7 +15,8 @@ enum ProcessMode {
 };
 //用来加载设备驱动，并打开/dev/*
 //获取数据并显示在相应的qlabel或供计算使用
-int DataProcess(int a);
+int DataProcess(ProcessMode mode);
+
 
 
 //根据广谱气体的返回数据调用LED蜂鸣器进行警告

@@ -1,14 +1,23 @@
+// dataprocessthread.h
 #ifndef DATAPROCESSTHREAD_H
 #define DATAPROCESSTHREAD_H
 
 #include <QObject>
-#include <QTimer>
 #include <QThread>
+#include <QTimer>
 #include "dataprocess.h"
+#include <sys/ioctl.h>   // for ioctl
+#include <fcntl.h>
+#include <unistd.h>
+
+// 直接对应驱动中的 IOCTL_BUZZER_ON = 4, IOCTL_BUZZER_OFF = 3
+#define BUZZER_ON   4
+#define BUZZER_OFF  3
 
 class DataProcessThread : public QObject
 {
     Q_OBJECT
+
 public:
     explicit DataProcessThread(ProcessMode mode, QObject *parent = nullptr);
     ~DataProcessThread();
@@ -16,26 +25,28 @@ public:
 signals:
     void gasWarning(int);
     void distanceWarning(float);
-    void lightDetected(QString);
-   void tempHumDetected(float temperature, float humidity);
-    void ledBuzzerTriggered();
+    void lightDetected(const QString &);
+    void tempHumDetected(float temperature, float humidity);
+    void finished();
 
-public slots:
+private slots:
     void start();
-    void stop();
     void process();
+    void triggerBuzzer();
 
 private:
-    ProcessMode m_mode;
-    bool m_running;
-    QTimer *m_timer;
-    QThread m_thread;
-
+    void stop();
     void initDrivers();
     void loadDriver(const QString &path);
+    int calculateBuzzerInterval(float dist);
 
-signals:
-    void finished();
+    ProcessMode m_mode;
+    bool        m_running;
+    QTimer     *m_timer;
+    QTimer     *buzzerTimer;
+    QThread     m_thread;
+    int         buzzerFd;
+    float       lastDist;
 };
 
 #endif // DATAPROCESSTHREAD_H

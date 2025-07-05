@@ -15,6 +15,7 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
 
@@ -27,6 +28,7 @@ public:
     QLabel *imagelabel1;
     QPushButton *pushButton;
     QLabel *label_2;
+    QLineEdit *lineEdit;
 
     void setupUi(QWidget *visualizer)
     {
@@ -50,7 +52,16 @@ public:
         pushButton->setGeometry(QRect(680, 390, 89, 25));
         label_2 = new QLabel(visualizer);
         label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(60, 150, 250, 250));
+        label_2->setGeometry(QRect(50, 90, 300, 300));
+        label_2->setPixmap(QPixmap(QString::fromUtf8(":/\346\241\214\351\235\242/2025-06-22 09-52-31\345\261\217\345\271\225\346\210\252\345\233\276.png")));
+        lineEdit = new QLineEdit(visualizer);
+        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        lineEdit->setGeometry(QRect(380, 200, 361, 51));
+        QFont font1;
+        font1.setPointSize(20);
+        font1.setBold(true);
+        font1.setWeight(75);
+        lineEdit->setFont(font1);
 
         retranslateUi(visualizer);
 
@@ -63,7 +74,8 @@ public:
         label->setText(QApplication::translate("visualizer", "\345\217\257\350\247\206\345\214\226\346\225\260\346\215\256", 0));
         imagelabel1->setText(QString());
         pushButton->setText(QApplication::translate("visualizer", "\350\277\224\345\233\236\344\270\273\351\241\265\351\235\242", 0));
-        label_2->setText(QApplication::translate("visualizer", "TextLabel", 0));
+        label_2->setText(QString());
+        lineEdit->setText(QApplication::translate("visualizer", "   \350\266\205\345\243\260\346\263\242\346\265\213\350\267\235\345\212\250\346\200\201\345\217\257\350\247\206\345\214\226\345\261\225\347\244\272", 0));
     } // retranslateUi
 
 };

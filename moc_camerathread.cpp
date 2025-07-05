@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_cameraThread_t {
-    QByteArrayData data[6];
-    char stringdata[60];
+    QByteArrayData data[5];
+    char stringdata[39];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -30,14 +30,12 @@ struct qt_meta_stringdata_cameraThread_t {
 static const qt_meta_stringdata_cameraThread_t qt_meta_stringdata_cameraThread = {
     {
 QT_MOC_LITERAL(0, 0, 12),
-QT_MOC_LITERAL(1, 13, 16),
-QT_MOC_LITERAL(2, 30, 0),
-QT_MOC_LITERAL(3, 31, 14),
-QT_MOC_LITERAL(4, 46, 3),
-QT_MOC_LITERAL(5, 50, 9)
+QT_MOC_LITERAL(1, 13, 10),
+QT_MOC_LITERAL(2, 24, 0),
+QT_MOC_LITERAL(3, 25, 3),
+QT_MOC_LITERAL(4, 29, 9)
     },
-    "cameraThread\0Collect_complete\0\0"
-    "unsigned char*\0rgb\0errorshow"
+    "cameraThread\0imageReady\0\0img\0errorshow"
 };
 #undef QT_MOC_LITERAL
 
@@ -56,10 +54,10 @@ static const uint qt_meta_data_cameraThread[] = {
 
  // signals: name, argc, parameters, tag, flags
        1,    1,   24,    2, 0x06 /* Public */,
-       5,    0,   27,    2, 0x06 /* Public */,
+       4,    0,   27,    2, 0x06 /* Public */,
 
  // signals: parameters
-    QMetaType::Void, 0x80000000 | 3,    4,
+    QMetaType::Void, QMetaType::QImage,    3,
     QMetaType::Void,
 
        0        // eod
@@ -70,7 +68,7 @@ void cameraThread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
     if (_c == QMetaObject::InvokeMetaMethod) {
         cameraThread *_t = static_cast<cameraThread *>(_o);
         switch (_id) {
-        case 0: _t->Collect_complete((*reinterpret_cast< unsigned char*(*)>(_a[1]))); break;
+        case 0: _t->imageReady((*reinterpret_cast< const QImage(*)>(_a[1]))); break;
         case 1: _t->errorshow(); break;
         default: ;
         }
@@ -78,8 +76,8 @@ void cameraThread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         int *result = reinterpret_cast<int *>(_a[0]);
         void **func = reinterpret_cast<void **>(_a[1]);
         {
-            typedef void (cameraThread::*_t)(unsigned char * );
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&cameraThread::Collect_complete)) {
+            typedef void (cameraThread::*_t)(const QImage & );
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&cameraThread::imageReady)) {
                 *result = 0;
             }
         }
@@ -129,7 +127,7 @@ int cameraThread::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void cameraThread::Collect_complete(unsigned char * _t1)
+void cameraThread::imageReady(const QImage & _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);

@@ -1,19 +1,21 @@
+// camera.cpp
 #include "camera.h"
 #include "ui_camera.h"
-#include <stdlib.h>
 
-camera::camera(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::camera)
+camera::camera(QWidget *parent)
+    : QWidget(parent),
+      ui(new Ui::camera)
 {
     ui->setupUi(this);
 
-    camerathread = new cameraThread();
-
-    connect(camerathread, SIGNAL(errorshow()), this, SLOT(errorshowslot()));
-
-    connect(this,SIGNAL(Show_complete()),camerathread,SLOT(startCapture()));
-    connect(camerathread,SIGNAL(Collect_complete(unsigned char*)),this,SLOT(videoDisplay(unsigned char*)));
+    // 1. 摄像头线程，异步获取 QImage
+    camerathread = new cameraThread(this);
+    connect(camerathread, &cameraThread::errorshow,
+            this, &camera::errorshowslot);
+    connect(this, &camera::Show_complete,
+            camerathread, &cameraThread::startCapture);
+    connect(camerathread, &cameraThread::imageReady,
+            this, &camera::videoDisplay);
     camerathread->start();
 }
 
@@ -24,28 +26,28 @@ camera::~camera()
 
 void camera::errorshowslot()
 {
-    ui->cameraLabel->setText(tr("摄像头初始化失败，请检查是否插好，并重新启动！"));
+    ui->cameraLabel->setText(
+        tr("摄像头初始化失败，请检查是否插好，并重新启动！")
+    );
 }
 
-void camera::videoDisplay(unsigned char *pp)
+void camera::videoDisplay(const QImage &frame)
 {
-//    QImage frame = QImage(pp,IMAGE_WIDTH,IMAGE_HEIGHT,QImage::Format_RGB888).mirrored(false, true);
-//    ui->cameraLabel->setPixmap(QPixmap::fromImage(frame));
-    QImage frame = QImage(pp,IMAGE_WIDTH,IMAGE_HEIGHT,QImage::Format_RGB888).mirrored(false, false);
-    ui->cameraLabel->setPixmap(QPixmap::fromImage(frame));
+    // 直接在 QLabel 显示最新帧
+    ui->cameraLabel->setPixmap(
+        QPixmap::fromImage(frame
+            .scaled(ui->cameraLabel->size(),
+                    Qt::KeepAspectRatio,
+                    Qt::SmoothTransformation))
+    );
 }
 
 void camera::on_startButton_clicked()
 {
-    cameraflag = cameraflag ? false : true;
-    if(cameraflag == true)
-    {
-         ui->startButton->setText(tr("暂停"));
-        emit this->Show_complete();
-    }
-    else
-    {
-       ui->startButton->setText(tr("播放"));
-       emit this->Show_complete();
-    }
+    // 切换播放/暂停
+    cameraflag = !cameraflag;
+    ui->startButton->setText(
+        cameraflag ? tr("暂停") : tr("播放")
+    );
+    emit Show_complete();
 }

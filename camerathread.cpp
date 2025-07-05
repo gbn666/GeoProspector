@@ -1,51 +1,38 @@
 // camerathread.cpp
 
 #include "camerathread.h"
-
 #include <QDebug>
 #include <errno.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>    // <-- 为 ioctl 提供声明
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <linux/videodev2.h>
+#include <unistd.h>
 
-// 构造：分配 RGB 缓冲，打开并初始化设备
+#define CLEAR(x) memset(&(x), 0, sizeof(x))
+
 cameraThread::cameraThread(QObject *parent)
-  : QThread(parent),
-    videofd(-1),
-    capturing(false),
-    buffers(NULL),
-    nbuffers(0),
-    fileLength(0),
-    rgbBuffer(NULL)
+  : QThread(parent)
 {
-    // 分配一次性 RGB888 缓冲
+    // 分配RGB888缓冲
     rgbBuffer = (unsigned char*)malloc(IMAGE_WIDTH * IMAGE_HEIGHT * 3);
     if (!rgbBuffer) {
-        qCritical("Failed to malloc rgbBuffer");
+        qCritical() << "Failed to malloc rgbBuffer";
         emit errorshow();
         return;
     }
-
     // 打开并初始化设备
     if (openAndInitDevice() < 0) {
-        qCritical("Camera init failed");
+        qCritical() << "Camera init failed";
         emit errorshow();
     }
 }
 
 cameraThread::~cameraThread()
 {
-    // 停采 & 释放
     stopCaptureInternal();
     uninitVideo();
     if (videofd >= 0) closeVideo(videofd);
-    if (buffers)  free(buffers);
+    if (buffers)   free(buffers);
     if (rgbBuffer) free(rgbBuffer);
 }
 
@@ -62,37 +49,34 @@ void cameraThread::run()
                 perror("readFrame");
             }
         }
-        // 控制帧率约30fps
+        // 控制约30fps
         usleep(33000);
     }
 }
 
-//—— 私有方法 ——//
-
 int cameraThread::openAndInitDevice()
 {
     const char* devices[] = { DEV_NAME0, DEV_NAME1 };
-    const int   devCount  = 2;
-    bool        ok        = false;
-
-    for (int i = 0; i < devCount; ++i) {
+    for (int i = 0; i < 2; ++i) {
         videofd = ::open(devices[i], O_RDWR);
         if (videofd < 0) {
-            qWarning("open %s failed: %s", devices[i], strerror(errno));
+            qWarning() << "open" << devices[i] << "failed:" << strerror(errno);
             continue;
         }
-        qDebug("open %s success", devices[i]);
+        qDebug() << "open" << devices[i] << "success";
 
         getVideoFmt();
-        if (queryVideoCap() < 0 || setVideoFmt() < 0 || requestVideoBufsAndMmap() < 0) {
+        if (queryVideoCap() < 0 ||
+            setVideoFmt() < 0 ||
+            requestVideoBufsAndMmap() < 0)
+        {
             closeVideo(videofd);
             videofd = -1;
             continue;
         }
-        ok = true;
-        break;
+        return 0;
     }
-    return ok ? 0 : -1;
+    return -1;
 }
 
 void cameraThread::getVideoFmt()
@@ -133,7 +117,6 @@ int cameraThread::setVideoFmt()
     fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
     fmt.fmt.pix.field       = V4L2_FIELD_NONE;
     if (ioctl(videofd, VIDIOC_S_FMT, &fmt) < 0) return -1;
-    fileLength = fmt.fmt.pix.bytesperline * fmt.fmt.pix.height;
     return 0;
 }
 
@@ -155,10 +138,9 @@ int cameraThread::requestVideoBufsAndMmap()
         buf.index  = nbuffers;
         if (ioctl(videofd, VIDIOC_QUERYBUF, &buf) < 0) return -1;
         buffers[nbuffers].length = buf.length;
-        buffers[nbuffers].start = mmap(NULL, buf.length,
+        buffers[nbuffers].start = mmap(nullptr, buf.length,
                                         PROT_READ|PROT_WRITE,
-                                        MAP_SHARED,
-                                        videofd, buf.m.offset);
+                                        MAP_SHARED, videofd, buf.m.offset);
         if (buffers[nbuffers].start == MAP_FAILED) return -1;
         if (ioctl(videofd, VIDIOC_QBUF, &buf) < 0) return -1;
     }
@@ -180,25 +162,28 @@ int cameraThread::readFrame()
 
 int cameraThread::storeImage()
 {
+    // YUYV -> RGB888
     yuyv_to_rgb888((unsigned char*)buffers[tV4L2buf.index].start, rgbBuffer);
-    emit Collect_complete(rgbBuffer);
+
+    // 构造 QImage 并发射
+    QImage img(rgbBuffer,
+               IMAGE_WIDTH,
+               IMAGE_HEIGHT,
+               QImage::Format_RGB888);
+    emit imageReady(img);
     return 0;
 }
 
 int cameraThread::stopCaptureInternal()
 {
     int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    if (ioctl(videofd, VIDIOC_STREAMOFF, &type) < 0) {
-        perror("VIDIOC_STREAMOFF");
-        return -1;
-    }
+    ioctl(videofd, VIDIOC_STREAMOFF, &type);
     return 0;
 }
+
 void cameraThread::closeVideo(int fd)
 {
-    if (fd >= 0) {
-        ::close(fd);
-    }
+    if (fd >= 0) ::close(fd);
 }
 
 int cameraThread::uninitVideo()
@@ -209,7 +194,6 @@ int cameraThread::uninitVideo()
     return 0;
 }
 
-// YUYV -> RGB888
 int cameraThread::yuyv_to_rgb888(const unsigned char *yuyv, unsigned char *rgb)
 {
     int idx = 0;
@@ -227,12 +211,12 @@ int cameraThread::yuyv_to_rgb888(const unsigned char *yuyv, unsigned char *rgb)
             int r1 = c1 + ((409 * v) >> 8);
             int g1 = c1 - ((100 * u + 208 * v) >> 8);
             int b1 = c1 + ((516 * u) >> 8);
-            rgb[idx++] = (r0 < 0 ? 0 : r0 > 255 ? 255 : r0);
-            rgb[idx++] = (g0 < 0 ? 0 : g0 > 255 ? 255 : g0);
-            rgb[idx++] = (b0 < 0 ? 0 : b0 > 255 ? 255 : b0);
-            rgb[idx++] = (r1 < 0 ? 0 : r1 > 255 ? 255 : r1);
-            rgb[idx++] = (g1 < 0 ? 0 : g1 > 255 ? 255 : g1);
-            rgb[idx++] = (b1 < 0 ? 0 : b1 > 255 ? 255 : b1);
+            rgb[idx++] = qBound(0, r0, 255);
+            rgb[idx++] = qBound(0, g0, 255);
+            rgb[idx++] = qBound(0, b0, 255);
+            rgb[idx++] = qBound(0, r1, 255);
+            rgb[idx++] = qBound(0, g1, 255);
+            rgb[idx++] = qBound(0, b1, 255);
         }
     }
     return 0;

@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_camera_t {
-    QByteArrayData data[8];
-    char stringdata[90];
+    QByteArrayData data[7];
+    char stringdata[78];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,15 +32,13 @@ static const qt_meta_stringdata_camera_t qt_meta_stringdata_camera = {
 QT_MOC_LITERAL(0, 0, 6),
 QT_MOC_LITERAL(1, 7, 13),
 QT_MOC_LITERAL(2, 21, 0),
-QT_MOC_LITERAL(3, 22, 22),
-QT_MOC_LITERAL(4, 45, 12),
-QT_MOC_LITERAL(5, 58, 14),
-QT_MOC_LITERAL(6, 73, 2),
-QT_MOC_LITERAL(7, 76, 13)
+QT_MOC_LITERAL(3, 22, 13),
+QT_MOC_LITERAL(4, 36, 12),
+QT_MOC_LITERAL(5, 49, 5),
+QT_MOC_LITERAL(6, 55, 22)
     },
-    "camera\0Show_complete\0\0on_startButton_clicked\0"
-    "videoDisplay\0unsigned char*\0pp\0"
-    "errorshowslot"
+    "camera\0Show_complete\0\0errorshowslot\0"
+    "videoDisplay\0frame\0on_startButton_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -63,14 +61,14 @@ static const uint qt_meta_data_camera[] = {
  // slots: name, argc, parameters, tag, flags
        3,    0,   35,    2, 0x08 /* Private */,
        4,    1,   36,    2, 0x08 /* Private */,
-       7,    0,   39,    2, 0x08 /* Private */,
+       6,    0,   39,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 5,    6,
+    QMetaType::Void, QMetaType::QImage,    5,
     QMetaType::Void,
 
        0        // eod
@@ -82,9 +80,9 @@ void camera::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         camera *_t = static_cast<camera *>(_o);
         switch (_id) {
         case 0: _t->Show_complete(); break;
-        case 1: _t->on_startButton_clicked(); break;
-        case 2: _t->videoDisplay((*reinterpret_cast< unsigned char*(*)>(_a[1]))); break;
-        case 3: _t->errorshowslot(); break;
+        case 1: _t->errorshowslot(); break;
+        case 2: _t->videoDisplay((*reinterpret_cast< const QImage(*)>(_a[1]))); break;
+        case 3: _t->on_startButton_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {

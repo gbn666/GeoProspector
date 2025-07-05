@@ -39,6 +39,8 @@ public:
     QLabel *label_4;
     QLabel *label_5;
     QLabel *label_6;
+    QPushButton *recognitionButton;
+    QPushButton *wifiButton;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -56,7 +58,7 @@ public:
         labelImage->setWordWrap(false);
         titlelabel = new QLabel(centralWidget);
         titlelabel->setObjectName(QStringLiteral("titlelabel"));
-        titlelabel->setGeometry(QRect(180, 0, 400, 41));
+        titlelabel->setGeometry(QRect(180, 0, 411, 41));
         QFont font;
         font.setFamily(QStringLiteral("AR PL UKai CN"));
         font.setPointSize(21);
@@ -65,7 +67,7 @@ public:
         titlelabel->setFont(font);
         viewButton = new QPushButton(centralWidget);
         viewButton->setObjectName(QStringLiteral("viewButton"));
-        viewButton->setGeometry(QRect(290, 70, 120, 40));
+        viewButton->setGeometry(QRect(180, 70, 120, 40));
         QFont font1;
         font1.setFamily(QStringLiteral("AR PL UKai CN"));
         font1.setPointSize(17);
@@ -73,7 +75,7 @@ public:
         viewButton->setDefault(false);
         saveButton = new QPushButton(centralWidget);
         saveButton->setObjectName(QStringLiteral("saveButton"));
-        saveButton->setGeometry(QRect(500, 70, 120, 40));
+        saveButton->setGeometry(QRect(490, 70, 120, 40));
         saveButton->setFont(font1);
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
@@ -97,7 +99,7 @@ public:
         viewlabel->setAlignment(Qt::AlignCenter);
         startButton = new QPushButton(centralWidget);
         startButton->setObjectName(QStringLiteral("startButton"));
-        startButton->setGeometry(QRect(80, 70, 120, 40));
+        startButton->setGeometry(QRect(20, 70, 120, 40));
         startButton->setFont(font1);
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QStringLiteral("label_3"));
@@ -119,6 +121,14 @@ public:
         label_6->setObjectName(QStringLiteral("label_6"));
         label_6->setGeometry(QRect(650, 340, 91, 41));
         label_6->setFont(font2);
+        recognitionButton = new QPushButton(centralWidget);
+        recognitionButton->setObjectName(QStringLiteral("recognitionButton"));
+        recognitionButton->setGeometry(QRect(340, 70, 120, 40));
+        recognitionButton->setFont(font1);
+        wifiButton = new QPushButton(centralWidget);
+        wifiButton->setObjectName(QStringLiteral("wifiButton"));
+        wifiButton->setGeometry(QRect(640, 70, 120, 40));
+        wifiButton->setFont(font1);
         MainWindow->setCentralWidget(centralWidget);
 
         retranslateUi(MainWindow);
@@ -143,6 +153,8 @@ public:
         label_4->setText(QApplication::translate("MainWindow", "data2", 0));
         label_5->setText(QApplication::translate("MainWindow", "data3", 0));
         label_6->setText(QApplication::translate("MainWindow", "data4", 0));
+        recognitionButton->setText(QApplication::translate("MainWindow", "\350\257\206\345\210\253", 0));
+        wifiButton->setText(QApplication::translate("MainWindow", "\347\275\221\347\273\234\351\205\215\347\275\256", 0));
     } // retranslateUi
 
 };

@@ -5,7 +5,16 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += serialport
+QT += core gui network
 
+#QMAKE_MODULE_PATH += /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules
+#include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_charts.pri)
+#QT += charts
+
+#INCLUDEPATH += /usr/include/x86_64-linux-gnu/qt5/QtCharts
+
+#LIBS += -lQt5Charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 target.path=/home/
@@ -34,7 +43,12 @@ SOURCES += \
     camerathread.cpp \
     camera.cpp \
     dataprocess.cpp \
-    dataprocessthread.cpp
+    dataprocessthread.cpp \
+    dht11thread.cpp \
+    netconfigwidget.cpp \
+    WzSerialPort.cpp \
+    serialcomm.cpp \
+    imageuploader.cpp
 
 
 HEADERS += \
@@ -45,15 +59,26 @@ HEADERS += \
     ui_camera.h \
     device.h \
     dataprocess.h \
-    dataprocessthread.h
+    dataprocessthread.h \
+    dht11thread.h \
+    netconfigwidget.h \
+    WzSerialPort.h \
+    serialcomm.h \
+    imageuploader.h
 
 
 FORMS += \
         mainwindow.ui \
-    visualizer.ui
+    visualizer.ui \
+    recognition.ui \
+    wifi.ui \
+    netconfigwidget.ui
 
 DISTFILES += \
-    resources/logo
+    resources/logo \
+    ../桌面/plot.gif \
+    ../桌面/plot.gif \
+    ../桌面/2025-06-22 09-52-31屏幕截图.png
 
 RESOURCES += \
     images.qrc \

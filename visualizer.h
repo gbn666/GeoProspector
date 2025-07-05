@@ -2,6 +2,8 @@
 #define VISUALIZER_H
 
 #include <QWidget>
+#include <QMovie>
+#include <QPixmap>
 
 class MainWindow;  // 前向声明主窗口类
 

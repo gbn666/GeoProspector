@@ -67,14 +67,37 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>150</y>
-     <width>250</width>
-     <height>250</height>
+     <x>50</x>
+     <y>90</y>
+     <width>300</width>
+     <height>300</height>
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="images.qrc">:/桌面/2025-06-22 09-52-31屏幕截图.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>200</y>
+     <width>361</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>   超声波测距动态可视化展示</string>
    </property>
   </widget>
  </widget>

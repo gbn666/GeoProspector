@@ -2,4 +2,7 @@
     <qresource prefix="/new/prefix1">
         <file>logo</file>
     </qresource>
+    <qresource prefix="/">
+        <file>../桌面/2025-06-22 09-52-31屏幕截图.png</file>
+    </qresource>
 </RCC>

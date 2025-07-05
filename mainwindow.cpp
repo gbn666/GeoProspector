@@ -1,99 +1,110 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "netconfigwidget.h"
+#include "visualizer.h"
+#include <QMessageBox>
 #include <QPixmap>
+#include <QThread>
 #include <QDebug>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+    , camThread(nullptr)
+    , dhtThread(nullptr)
+    , m_serverHost()
+    , m_serverPort()
+    , m_serial(new SerialComm(this))
 {
     ui->setupUi(this);
-    ui->viewButton->setText("可视化");
-    ui->viewlabel->setText("相机画面");
 
+    // 检查 m_serial 是否成功初始化
+    if (!m_serial) {
+        qDebug() << "[MainWindow] Error: Failed to initialize SerialComm";
+        QMessageBox::critical(this, tr("错误"), tr("串口初始化失败"));
+    }
+
+    // 摄像头线程
     camThread = new cameraThread(this);
-    connect(camThread, SIGNAL(Collect_complete(unsigned char*)),
-            this, SLOT(displayFrame(unsigned char*)));
+    connect(camThread, &cameraThread::imageReady,
+            this, &MainWindow::displayFrame);
+    camThread->start();
 
+    // DHT11线程
+    dhtThread = new DHT11Thread(this);
+    connect(dhtThread, &DHT11Thread::newTempHum,
+            this, &MainWindow::updateDHT11Display);
+    connect(dhtThread, &QThread::finished,
+            dhtThread, &QObject::deleteLater);
+    dhtThread->start();
+
+    // 初始UI
     ui->label_5->setText("0.0℃，0.0%");
     ui->label_6->setText("正常");
     ui->label_3->setText("0.0cm");
     ui->label_4->setText("0.0lux");
-
-    dhtThread = new DHT11Thread(this);
-    connect(dhtThread, &DHT11Thread::finished, dhtThread, &DHT11Thread::deleteLater);
-    connect(this, &MainWindow::updateDHT11Display, this, &MainWindow::onTempHumUpdate);
-    dhtThread->start();
 }
 
 MainWindow::~MainWindow()
 {
+//    if (camThread) {
+//        camThread->stop(); // 调用 stop 方法
+//        camThread->wait();
+//        delete camThread;
+//    }
+//    if (dhtThread) {
+//        dhtThread->quit();
+//        dhtThread->wait();
+//    }
+//    if (m_serial) {
+//        if (m_serial->isOpen()) {
+//            m_serial->close();
+//        }
+//        delete m_serial;
+//    }
     delete ui;
 }
 
-MainWindow::DHT11Thread::DHT11Thread(MainWindow *parent)
-    : QThread(parent), m_parent(parent)
+void MainWindow::updateDHT11Display(const QString &tempInt,
+                                    const QString &tempFrac,
+                                    const QString &humidity)
 {
+    ui->label_5->setText(
+        QStringLiteral("温度: %1.%2℃  湿度: %3%")
+            .arg(tempInt).arg(tempFrac).arg(humidity));
 }
 
-void MainWindow::DHT11Thread::run()
+void MainWindow::onTempHumDetected(float temperature, float humidity)
 {
-    int fd = open("/dev/DHT11", O_RDWR);
-    if(fd == -1) {
-        qDebug() << "DHT11 open failed:" << strerror(errno);
+    int ti = int(temperature);
+    int tf = int((temperature - ti) * 10);
+    ui->label_5->setText(
+        QStringLiteral("温度: %1.%2℃  湿度: %3%")
+            .arg(ti).arg(tf).arg(int(humidity)));
+}
+
+void MainWindow::displayFrame(const QImage &img)
+{
+    if (img.isNull()) {
+        qDebug() << "[MainWindow] Error: Received null image from cameraThread";
         return;
     }
-
-    unsigned char buf[6];
-    unsigned char trigger = 1;
-
-    while(!isInterruptionRequested()) {
-        write(fd, &trigger, 1);
-        int bytesRead = read(fd, buf, sizeof(buf));
-
-        if(bytesRead == sizeof(buf)) {
-            emit m_parent->updateDHT11Display(buf[2], buf[3], buf[0]);
-        }
-
-        msleep(2000);
-    }
-
-    ::close(fd);
-}
-
-void MainWindow::updateDHT11Display(int tempInt, int tempFrac, int humidity)
-{
-    QString text = QString("温度: %1.%2℃  湿度: %3%")
-                  .arg(tempInt)
-                  .arg(tempFrac)
-                  .arg(humidity);
-    ui->label_5->setText(text);
-}
-
-void MainWindow::displayFrame(unsigned char *buffer)
-{
-    QImage img(buffer, 640, 480, 640*3, QImage::Format_RGB888);
-    ui->viewlabel->setPixmap(QPixmap::fromImage(img.scaled(480, 360, Qt::KeepAspectRatio)));
-}
-
-void MainWindow::onFrameReady(unsigned char *rgbBuffer)
-{
-    QImage img(rgbBuffer, 480, 360, 480 * 3, QImage::Format_RGB888);
-    ui->viewlabel->setScaledContents(false);
-    ui->viewlabel->setPixmap(QPixmap::fromImage(img));
+    m_lastFrame = img.copy(); // 深拷贝，确保图像有效
+    ui->viewlabel->setPixmap(
+        QPixmap::fromImage(
+            m_lastFrame.scaled(ui->viewlabel->size(),
+                               Qt::KeepAspectRatio,
+                               Qt::SmoothTransformation)));
 }
 
 void MainWindow::on_viewButton_clicked()
 {
-    this->hide();
+    hide();
     visualizer *vis = new visualizer(nullptr);
     vis->setAttribute(Qt::WA_DeleteOnClose);
     connect(vis, &visualizer::returnToMainWindow, this, [this, vis]() {
         vis->close();
-        this->show();
+        show();
         camThread->startCapture();
     });
     vis->show();
@@ -102,73 +113,124 @@ void MainWindow::on_viewButton_clicked()
 void MainWindow::on_startButton_clicked()
 {
     camThread->startCapture();
-    camThread->start();
-
-    DataProcessThread *thGas     = new DataProcessThread(BroadGas, nullptr);
-    DataProcessThread *thLight   = new DataProcessThread(LightLevel, nullptr);
-    DataProcessThread *thUltra   = new DataProcessThread(Ultrasonic, nullptr);
-    DataProcessThread *thLed     = new DataProcessThread(LEDBuzzer, nullptr);
-
-    connect(thGas, SIGNAL(gasWarning(int)), this, SLOT(onGasUpdate(int)));
-    thGas->start();
-
-    connect(thLight, SIGNAL(lightDetected(QString)), this, SLOT(onLightDetected(QString)));
-    thLight->start();
-
-    connect(thUltra, SIGNAL(distanceWarning(float)), this, SLOT(onDistanceUpdate(float)));
-    thUltra->start();
-
-    connect(thLed, SIGNAL(ledBuzzerTriggered()), this, SLOT(onLedTriggered()));
-    thLed->start();
-    ui->label_5->setText("27.8°C, 48%");
+    auto thGas = new DataProcessThread(BroadGas, this);
+    auto thLight = new DataProcessThread(LightLevel, this);
+    auto thUltra = new DataProcessThread(Ultrasonic, this);
+    auto thTempHum = new DataProcessThread(TempHumidity, this);
+    connect(thGas, &DataProcessThread::gasWarning,
+            this, &MainWindow::onGasUpdate);
+    connect(thLight, &DataProcessThread::lightDetected,
+            this, &MainWindow::onLightDetected);
+    connect(thUltra, &DataProcessThread::distanceWarning,
+            this, &MainWindow::onDistanceUpdate);
+    connect(thTempHum, &DataProcessThread::tempHumDetected,
+            this, &MainWindow::onTempHumDetected);
 }
 
 void MainWindow::onGasUpdate(int gasValue)
 {
-    QString status = (gasValue == 0) ? "正常" : "异常";
-    QString color = (gasValue == 0) ? "green" : "red";
-    const char *LEDBUZZER_DEV  = "/dev/LEDBuzzer";
-    int fd = ::open(LEDBUZZER_DEV, 0);
-    if(gasValue!=0)
-    {
-
-        ioctl(fd,0);
-        ioctl(fd,4);
-
-    }
-    else{
-        ioctl(fd,1);
-        ioctl(fd,3);
-    }
-    ui->label_6->setStyleSheet("QLabel { color : " + color + "; }");
+    QString status = (gasValue == 0 ? "正常" : "异常");
+    QString color  = (gasValue == 0 ? "green" : "red");
+    WarningGas(gasValue);
+    ui->label_6->setStyleSheet(
+        QString("QLabel{color:%1;}").arg(color));
     ui->label_6->setText(status);
 }
 
 void MainWindow::onDistanceUpdate(float dist)
 {
-    ui->label_3->setText(QString::number(dist) + " cm");
-}
-
-void MainWindow::onLightUpdate(int lightVal)
-{
-    ui->label_4->setText(QString::number(lightVal) + "lux");
-}
-
-void MainWindow::onLedTriggered()
-{
-    // 目前无UI操作，预留接口
-}
-
-void MainWindow::onTempHumUpdate(float temperature, float humidity)
-{
-    ui->label_5->setText(
-        QString("%1 °C, %2 %")
-          .arg(temperature, 0, 'f', 1)
-          .arg(humidity,    0, 'f', 1)
-    );
+    ui->label_3->setText(
+        QString::number(dist, 'f', 1) + " cm");
 }
 
 void MainWindow::onLightDetected(const QString &info)
 {
-    ui->label_4->setText(info+"lux");
+    ui->label_4->setText(info + " lux");
+}
+
+void MainWindow::on_saveButton_clicked()
+{
+    QMessageBox::information(this, tr("提示"), tr("保存成功"));
+}
+
+void MainWindow::on_wifiButton_clicked()
+{
+    auto *w = new NetConfigWidget;
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    connect(w, &NetConfigWidget::serverConfigured,
+            this, &MainWindow::onServerConfigured);
+    connect(w, &NetConfigWidget::returnToMainWindow,
+            this, [this, w](){
+        w->close();
+        show();
+        camThread->startCapture();
+    });
+    hide();
+    w->show();
+}
+
+void MainWindow::onServerConfigured(const QString &host,
+                                    const QString &port)
+{
+    m_serverHost = host;
+    m_serverPort = port;
+    qDebug() << "[MainWindow] Server configured: " << host << ":" << port;
+    QMessageBox::information(this, tr("提示"),
+                             tr("服务器已设置为 %1:%2")
+                             .arg(host).arg(port));
+}
+
+void MainWindow::on_recognitionButton_clicked()
+{
+    // 1. 检查串口对象是否初始化
+    if (!m_serial) {
+        qDebug() << "[MainWindow] Error: m_serial is null";
+        QMessageBox::critical(this, tr("错误"), tr("串口对象未初始化"));
+        return;
+    }
+
+    // 2. 检查图像有效性
+    if (m_lastFrame.isNull()) {
+        qDebug() << "[MainWindow] Error: m_lastFrame is null";
+        QMessageBox::warning(this, tr("警告"), tr("尚未获取到图像帧"));
+        return;
+    }
+
+    // 3. 检查服务器配置
+    if (m_serverHost.isEmpty() || m_serverPort.isEmpty()) {
+        qDebug() << "[MainWindow] Error: Server host or port is empty";
+        QMessageBox::warning(this, tr("警告"), tr("请先通过 WiFi 设置配置服务器"));
+        return;
+    }
+
+    // 4. 确保串口已打开
+    if (!m_serial->isOpen()) {
+        qDebug() << "[MainWindow] Opening serial port /dev/ttymxc1 at 115200";
+        if (!m_serial->openPort("/dev/ttymxc1", 115200)) {
+            qDebug() << "[MainWindow] Error: Failed to open serial port";
+            QMessageBox::critical(this, tr("错误"), tr("打开串口失败"));
+            return;
+        }
+    }
+
+    // 5. 创建 ImageUploader
+    m_ssid="MONSTER";
+    m_password="12345678";
+    ImageUploader *uploader = new ImageUploader(m_serial, m_serverHost, m_serverPort, m_ssid, m_password, this);
+
+    connect(uploader, &ImageUploader::recognitionResult, this, [this](const QString &res) {
+        qDebug() << "[MainWindow] Recognition result: " << res;
+        QMessageBox::information(this, tr("识别结果"), tr("识别结果: %1").arg(res));
+    });
+    connect(uploader, &ImageUploader::errorOccurred, this, [this](const QString &err) {
+        qDebug() << "[MainWindow] Error occurred: " << err;
+        QMessageBox::critical(this, tr("错误"), err);
+    });
+
+    // 6. 检查网络连接并发起上传
+    qDebug() << "[MainWindow] Starting network check and upload";
+    uploader->checkNetworkAndUpload(m_lastFrame);
+
+    // 7. 延迟删除 uploader
+    uploader->deleteLater();
 }
