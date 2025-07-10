@@ -1,36 +1,43 @@
+// MainWindow.cpp
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "netconfigwidget.h"
 #include "visualizer.h"
+#include "imageuploader.h"
+#include "serialcomm.h"
+
 #include <QMessageBox>
 #include <QPixmap>
 #include <QThread>
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QtConcurrent/QtConcurrent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , camThread(nullptr)
     , dhtThread(nullptr)
-    , m_serverHost()
-    , m_serverPort()
     , m_serial(new SerialComm(this))
 {
     ui->setupUi(this);
 
-    // 检查 m_serial 是否成功初始化
+    // 检查串口对象
     if (!m_serial) {
-        qDebug() << "[MainWindow] Error: Failed to initialize SerialComm";
+        qDebug() << "[MainWindow] Error: SerialComm 初始化失败";
         QMessageBox::critical(this, tr("错误"), tr("串口初始化失败"));
     }
 
-    // 摄像头线程
+    // 启动摄像头线程
     camThread = new cameraThread(this);
     connect(camThread, &cameraThread::imageReady,
             this, &MainWindow::displayFrame);
     camThread->start();
 
-    // DHT11线程
+    // 启动 DHT11 温湿度线程
     dhtThread = new DHT11Thread(this);
     connect(dhtThread, &DHT11Thread::newTempHum,
             this, &MainWindow::updateDHT11Display);
@@ -38,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
             dhtThread, &QObject::deleteLater);
     dhtThread->start();
 
-    // 初始UI
+    // 初始 UI 状态
     ui->label_5->setText("0.0℃，0.0%");
     ui->label_6->setText("正常");
     ui->label_3->setText("0.0cm");
@@ -47,21 +54,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-//    if (camThread) {
-//        camThread->stop(); // 调用 stop 方法
-//        camThread->wait();
-//        delete camThread;
-//    }
-//    if (dhtThread) {
-//        dhtThread->quit();
-//        dhtThread->wait();
-//    }
-//    if (m_serial) {
-//        if (m_serial->isOpen()) {
-//            m_serial->close();
-//        }
-//        delete m_serial;
-//    }
     delete ui;
 }
 
@@ -86,10 +78,10 @@ void MainWindow::onTempHumDetected(float temperature, float humidity)
 void MainWindow::displayFrame(const QImage &img)
 {
     if (img.isNull()) {
-        qDebug() << "[MainWindow] Error: Received null image from cameraThread";
+        qDebug() << "[MainWindow] Error: 接收到空图像";
         return;
     }
-    m_lastFrame = img.copy(); // 深拷贝，确保图像有效
+    m_lastFrame = img.copy();
     ui->viewlabel->setPixmap(
         QPixmap::fromImage(
             m_lastFrame.scaled(ui->viewlabel->size(),
@@ -113,10 +105,11 @@ void MainWindow::on_viewButton_clicked()
 void MainWindow::on_startButton_clicked()
 {
     camThread->startCapture();
-    auto thGas = new DataProcessThread(BroadGas, this);
-    auto thLight = new DataProcessThread(LightLevel, this);
-    auto thUltra = new DataProcessThread(Ultrasonic, this);
+    auto thGas     = new DataProcessThread(BroadGas, this);
+    auto thLight   = new DataProcessThread(LightLevel, this);
+    auto thUltra   = new DataProcessThread(Ultrasonic, this);
     auto thTempHum = new DataProcessThread(TempHumidity, this);
+
     connect(thGas, &DataProcessThread::gasWarning,
             this, &MainWindow::onGasUpdate);
     connect(thLight, &DataProcessThread::lightDetected,
@@ -139,8 +132,7 @@ void MainWindow::onGasUpdate(int gasValue)
 
 void MainWindow::onDistanceUpdate(float dist)
 {
-    ui->label_3->setText(
-        QString::number(dist, 'f', 1) + " cm");
+    ui->label_3->setText(QString::number(dist, 'f', 1) + " cm");
 }
 
 void MainWindow::onLightDetected(const QString &info)
@@ -160,7 +152,7 @@ void MainWindow::on_wifiButton_clicked()
     connect(w, &NetConfigWidget::serverConfigured,
             this, &MainWindow::onServerConfigured);
     connect(w, &NetConfigWidget::returnToMainWindow,
-            this, [this, w](){
+            this, [this, w]() {
         w->close();
         show();
         camThread->startCapture();
@@ -174,7 +166,7 @@ void MainWindow::onServerConfigured(const QString &host,
 {
     m_serverHost = host;
     m_serverPort = port;
-    qDebug() << "[MainWindow] Server configured: " << host << ":" << port;
+    qDebug() << "[MainWindow] 服务器已设置为" << host << ":" << port;
     QMessageBox::information(this, tr("提示"),
                              tr("服务器已设置为 %1:%2")
                              .arg(host).arg(port));
@@ -182,55 +174,72 @@ void MainWindow::onServerConfigured(const QString &host,
 
 void MainWindow::on_recognitionButton_clicked()
 {
-    // 1. 检查串口对象是否初始化
+    // 1. 基础校验
     if (!m_serial) {
-        qDebug() << "[MainWindow] Error: m_serial is null";
         QMessageBox::critical(this, tr("错误"), tr("串口对象未初始化"));
         return;
     }
-
-    // 2. 检查图像有效性
     if (m_lastFrame.isNull()) {
-        qDebug() << "[MainWindow] Error: m_lastFrame is null";
         QMessageBox::warning(this, tr("警告"), tr("尚未获取到图像帧"));
         return;
     }
-
-    // 3. 检查服务器配置
     if (m_serverHost.isEmpty() || m_serverPort.isEmpty()) {
-        qDebug() << "[MainWindow] Error: Server host or port is empty";
-        QMessageBox::warning(this, tr("警告"), tr("请先通过 WiFi 设置配置服务器"));
+        QMessageBox::warning(this, tr("警告"), tr("请先通过 WiFi 设置服务器"));
         return;
     }
 
-    // 4. 确保串口已打开
+    // 2. 打开串口（如尚未打开）
     if (!m_serial->isOpen()) {
-        qDebug() << "[MainWindow] Opening serial port /dev/ttymxc1 at 115200";
         if (!m_serial->openPort("/dev/ttymxc1", 115200)) {
-            qDebug() << "[MainWindow] Error: Failed to open serial port";
             QMessageBox::critical(this, tr("错误"), tr("打开串口失败"));
             return;
         }
     }
 
-    // 5. 创建 ImageUploader
-    m_ssid="MONSTER";
-    m_password="12345678";
-    ImageUploader *uploader = new ImageUploader(m_serial, m_serverHost, m_serverPort, m_ssid, m_password, this);
+    // 3. 创建 uploader 并连接信号
+    auto *uploader = new ImageUploader(
+        m_serial,
+        m_serverHost,
+        m_serverPort,
+        QStringLiteral("MONSTER"),
+        QStringLiteral("12345678"),
+        this
+    );
 
-    connect(uploader, &ImageUploader::recognitionResult, this, [this](const QString &res) {
-        qDebug() << "[MainWindow] Recognition result: " << res;
-        QMessageBox::information(this, tr("识别结果"), tr("识别结果: %1").arg(res));
-    });
-    connect(uploader, &ImageUploader::errorOccurred, this, [this](const QString &err) {
-        qDebug() << "[MainWindow] Error occurred: " << err;
+    connect(uploader, &ImageUploader::recognitionResult,
+            this, [this, uploader](const QString &jsonStr) {
+        // 解析 JSON 并显示
+        QJsonParseError err;
+        auto doc = QJsonDocument::fromJson(jsonStr.toUtf8(), &err);
+        if (err.error != QJsonParseError::NoError) {
+            QMessageBox::critical(this, tr("错误"),
+                                  tr("解析识别结果失败: %1").arg(err.errorString()));
+        } else {
+            auto obj = doc.object();
+            auto arr = obj.value("results").toArray();
+            QString msg = tr("识别结果：\n");
+            for (const auto &v : arr) {
+                auto itm = v.toObject();
+                QString lbl = itm.value("label").toString();
+                double  cf  = itm.value("confidence").toDouble();
+                msg += QStringLiteral("  • %1 （%2%）\n")
+                           .arg(lbl)
+                           .arg(cf * 100, 0, 'f', 2);
+            }
+            QMessageBox::information(this, tr("识别完成"), msg);
+        }
+        uploader->deleteLater();
+    }, Qt::QueuedConnection);
+
+    connect(uploader, &ImageUploader::errorOccurred,
+            this, [this, uploader](const QString &err) {
         QMessageBox::critical(this, tr("错误"), err);
+        uploader->deleteLater();
+    }, Qt::QueuedConnection);
+
+    // 4. 异步执行上传和识别
+    QtConcurrent::run([uploader, this]() {
+        uploader->checkNetworkAndUpload(m_lastFrame);
     });
-
-    // 6. 检查网络连接并发起上传
-    qDebug() << "[MainWindow] Starting network check and upload";
-    uploader->checkNetworkAndUpload(m_lastFrame);
-
-    // 7. 延迟删除 uploader
-    uploader->deleteLater();
 }
+

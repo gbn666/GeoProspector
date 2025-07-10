@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ImageUploader_t {
     QByteArrayData data[6];
-    char stringdata[62];
+    char stringdata[58];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -30,14 +30,14 @@ struct qt_meta_stringdata_ImageUploader_t {
 static const qt_meta_stringdata_ImageUploader_t qt_meta_stringdata_ImageUploader = {
     {
 QT_MOC_LITERAL(0, 0, 13),
-QT_MOC_LITERAL(1, 14, 17),
-QT_MOC_LITERAL(2, 32, 0),
-QT_MOC_LITERAL(3, 33, 5),
-QT_MOC_LITERAL(4, 39, 13),
-QT_MOC_LITERAL(5, 53, 8)
+QT_MOC_LITERAL(1, 14, 13),
+QT_MOC_LITERAL(2, 28, 0),
+QT_MOC_LITERAL(3, 29, 3),
+QT_MOC_LITERAL(4, 33, 17),
+QT_MOC_LITERAL(5, 51, 6)
     },
-    "ImageUploader\0recognitionResult\0\0label\0"
-    "errorOccurred\0errorMsg"
+    "ImageUploader\0errorOccurred\0\0msg\0"
+    "recognitionResult\0result"
 };
 #undef QT_MOC_LITERAL
 
@@ -70,8 +70,8 @@ void ImageUploader::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
     if (_c == QMetaObject::InvokeMetaMethod) {
         ImageUploader *_t = static_cast<ImageUploader *>(_o);
         switch (_id) {
-        case 0: _t->recognitionResult((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 1: _t->errorOccurred((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 0: _t->errorOccurred((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 1: _t->recognitionResult((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -79,13 +79,13 @@ void ImageUploader::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         void **func = reinterpret_cast<void **>(_a[1]);
         {
             typedef void (ImageUploader::*_t)(const QString & );
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&ImageUploader::recognitionResult)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&ImageUploader::errorOccurred)) {
                 *result = 0;
             }
         }
         {
             typedef void (ImageUploader::*_t)(const QString & );
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&ImageUploader::errorOccurred)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&ImageUploader::recognitionResult)) {
                 *result = 1;
             }
         }
@@ -129,14 +129,14 @@ int ImageUploader::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void ImageUploader::recognitionResult(const QString & _t1)
+void ImageUploader::errorOccurred(const QString & _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void ImageUploader::errorOccurred(const QString & _t1)
+void ImageUploader::recognitionResult(const QString & _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
