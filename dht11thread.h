@@ -20,9 +20,8 @@ signals:
      * @param tempFrac  温度小数部分
      * @param humidity  湿度整数部分
      */
-    void newTempHum(const QString &tempInt,
-                    const QString &tempFrac,
-                    const QString &humidity);
+signals:
+    void newTempHum(int temperature, int humidity);   // 推荐 int
 
 protected:
     void run() override;

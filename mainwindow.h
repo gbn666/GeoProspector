@@ -20,9 +20,9 @@ public:
     ~MainWindow();
 
 private slots:
-    void updateDHT11Display(const QString &tempInt,
-                            const QString &tempFrac,
-                            const QString &humidity);
+//    void updateDHT11Display(const QString &tempInt,
+//                            const QString &tempFrac,
+//                            const QString &humidity);
     void displayFrame(const QImage &img);
     void on_viewButton_clicked();
     void on_startButton_clicked();

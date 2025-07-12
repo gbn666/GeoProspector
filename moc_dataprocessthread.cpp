@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DataProcessThread_t {
-    QByteArrayData data[12];
-    char stringdata[134];
+    QByteArrayData data[11];
+    char stringdata[128];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -38,14 +38,13 @@ QT_MOC_LITERAL(5, 60, 15),
 QT_MOC_LITERAL(6, 76, 11),
 QT_MOC_LITERAL(7, 88, 8),
 QT_MOC_LITERAL(8, 97, 8),
-QT_MOC_LITERAL(9, 106, 5),
-QT_MOC_LITERAL(10, 112, 7),
-QT_MOC_LITERAL(11, 120, 13)
+QT_MOC_LITERAL(9, 106, 7),
+QT_MOC_LITERAL(10, 114, 13)
     },
     "DataProcessThread\0gasWarning\0\0"
     "distanceWarning\0lightDetected\0"
     "tempHumDetected\0temperature\0humidity\0"
-    "finished\0start\0process\0triggerBuzzer"
+    "finished\0process\0triggerBuzzer"
 };
 #undef QT_MOC_LITERAL
 
@@ -55,7 +54,7 @@ static const uint qt_meta_data_DataProcessThread[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+       7,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -63,16 +62,15 @@ static const uint qt_meta_data_DataProcessThread[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   54,    2, 0x06 /* Public */,
-       3,    1,   57,    2, 0x06 /* Public */,
-       4,    1,   60,    2, 0x06 /* Public */,
-       5,    2,   63,    2, 0x06 /* Public */,
-       8,    0,   68,    2, 0x06 /* Public */,
+       1,    1,   49,    2, 0x06 /* Public */,
+       3,    1,   52,    2, 0x06 /* Public */,
+       4,    1,   55,    2, 0x06 /* Public */,
+       5,    2,   58,    2, 0x06 /* Public */,
+       8,    0,   63,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       9,    0,   69,    2, 0x08 /* Private */,
-      10,    0,   70,    2, 0x08 /* Private */,
-      11,    0,   71,    2, 0x08 /* Private */,
+       9,    0,   64,    2, 0x08 /* Private */,
+      10,    0,   65,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int,    2,
@@ -82,7 +80,6 @@ static const uint qt_meta_data_DataProcessThread[] = {
     QMetaType::Void,
 
  // slots: parameters
-    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -99,9 +96,8 @@ void DataProcessThread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         case 2: _t->lightDetected((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 3: _t->tempHumDetected((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2]))); break;
         case 4: _t->finished(); break;
-        case 5: _t->start(); break;
-        case 6: _t->process(); break;
-        case 7: _t->triggerBuzzer(); break;
+        case 5: _t->process(); break;
+        case 6: _t->triggerBuzzer(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -165,13 +161,13 @@ int DataProcessThread::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 7;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 7)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 8;
+        _id -= 7;
     }
     return _id;
 }

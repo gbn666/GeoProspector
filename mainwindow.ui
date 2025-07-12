@@ -189,6 +189,11 @@
       <height>360</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>相机画面</string>
     </property>
@@ -254,9 +259,9 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>630</x>
       <y>280</y>
-      <width>131</width>
+      <width>171</width>
       <height>41</height>
      </rect>
     </property>
@@ -267,6 +272,9 @@
     </property>
     <property name="text">
      <string>data3</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">

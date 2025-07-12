@@ -37,13 +37,14 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::displayFrame);
     camThread->start();
 
-    // 启动 DHT11 温湿度线程
-    dhtThread = new DHT11Thread(this);
-    connect(dhtThread, &DHT11Thread::newTempHum,
-            this, &MainWindow::updateDHT11Display);
-    connect(dhtThread, &QThread::finished,
-            dhtThread, &QObject::deleteLater);
-    dhtThread->start();
+//    // 启动 DHT11 温湿度线程
+//    dhtThread = new DHT11Thread(this);
+//    connect(dhtThread, &DHT11Thread::newTempHum,
+//            this,      &MainWindow::updateDHT11Display);
+
+//    connect(dhtThread, &QThread::finished,
+//            dhtThread, &QObject::deleteLater);
+//    dhtThread->start();
 
     // 初始 UI 状态
     ui->label_5->setText("0.0℃，0.0%");
@@ -57,22 +58,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateDHT11Display(const QString &tempInt,
-                                    const QString &tempFrac,
-                                    const QString &humidity)
-{
-    ui->label_5->setText(
-        QStringLiteral("温度: %1.%2℃  湿度: %3%")
-            .arg(tempInt).arg(tempFrac).arg(humidity));
-}
+//void MainWindow::updateDHT11Display(const QString &tempInt,
+//                                    const QString &tempFrac,
+//                                    const QString &humidity)
+//{
+//    ui->label_5->setText(
+//        QStringLiteral("温度: %1.%2℃  湿度: %3%")
+//            .arg(tempInt).arg(tempFrac).arg(humidity));
+//}
 
 void MainWindow::onTempHumDetected(float temperature, float humidity)
 {
-    int ti = int(temperature);
-    int tf = int((temperature - ti) * 10);
     ui->label_5->setText(
-        QStringLiteral("温度: %1.%2℃  湿度: %3%")
-            .arg(ti).arg(tf).arg(int(humidity)));
+           QStringLiteral(" %1℃ %2%")
+               .arg(temperature)
+               .arg(humidity));
 }
 
 void MainWindow::displayFrame(const QImage &img)
@@ -108,7 +108,12 @@ void MainWindow::on_startButton_clicked()
     auto thGas     = new DataProcessThread(BroadGas, this);
     auto thLight   = new DataProcessThread(LightLevel, this);
     auto thUltra   = new DataProcessThread(Ultrasonic, this);
+    // 启动按钮里
     auto thTempHum = new DataProcessThread(TempHumidity, this);
+    thTempHum->start();
+    connect(thTempHum, &DataProcessThread::tempHumDetected,
+            this,      &MainWindow::onTempHumDetected);
+
 
     connect(thGas, &DataProcessThread::gasWarning,
             this, &MainWindow::onGasUpdate);
@@ -116,8 +121,7 @@ void MainWindow::on_startButton_clicked()
             this, &MainWindow::onLightDetected);
     connect(thUltra, &DataProcessThread::distanceWarning,
             this, &MainWindow::onDistanceUpdate);
-    connect(thTempHum, &DataProcessThread::tempHumDetected,
-            this, &MainWindow::onTempHumDetected);
+
 }
 
 void MainWindow::onGasUpdate(int gasValue)

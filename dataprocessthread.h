@@ -21,6 +21,7 @@ class DataProcessThread : public QObject
 public:
     explicit DataProcessThread(ProcessMode mode, QObject *parent = nullptr);
     ~DataProcessThread();
+    void start();
 
 signals:
     void gasWarning(int);
@@ -30,7 +31,7 @@ signals:
     void finished();
 
 private slots:
-    void start();
+
     void process();
     void triggerBuzzer();
 

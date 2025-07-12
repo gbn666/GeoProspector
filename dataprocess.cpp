@@ -75,17 +75,30 @@ int DataProcess(ProcessMode mode)
         break;
     }
     case TempHumidity: {
-        unsigned char buf[6];
-        if (read(fd, buf, sizeof(buf)) != sizeof(buf)) {
-//            qWarning() << "Failed to read from DHT11";
-            ::close(fd);
-            return 0;
+        if (mode != TempHumidity) return 0;
+
+         int fd = open("/dev/DHT11", O_RDONLY);
+         if (fd < 0) {
+             qDebug() << "open /dev/DHT11 failed:" << strerror(errno);
+             return 0;
+         }
+
+         unsigned char buf[6];
+         ssize_t n = read(fd, buf, sizeof(buf));
+         close(fd);
+
+         qDebug() << "DHT11 read n =" << n
+                  << "buf =" << QByteArray((char*)buf, n).toHex()
+                  << "sum =" << (buf[0]+buf[1]+buf[2]+buf[3]) << "chk" << buf[4];
+
+         if (n != 6) return 0;
+         uint8_t sum = buf[0] + buf[1] + buf[2] + buf[3];
+         if (buf[4] != sum) return 0;
+
+         int temp = buf[2];
+         int hum  = buf[0];
+         return (temp << 16) | hum;   // 高 16 位温度，低 16 位湿度
         }
-        int temp = (buf[2] << 8) | buf[3];
-        int hum = buf[0];
-        result = (temp << 16) | hum;
-        break;
-    }
     default:
         break;
     }
